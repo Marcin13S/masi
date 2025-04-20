@@ -4,25 +4,12 @@ import json
 
 class UnitermProcessor:
     def __init__(self, uniterms):
-        """
-        Inicjalizacja klasy przetwarzającej unitermy.
-        :param uniterms: Lista unitermów w postaci ciągu znaków.
-        """
         self.uniterms = uniterms
-    
+
     def sequence_uniterms(self):
-        """
-        Realizuje poziomą operację sekwencjonowania unitermów.
-        :return: Sekwencja połączonych unitermów.
-        """
         return " -> ".join(self.uniterms)
-    
+
     def eliminate_uniterms(self, uniterms_to_remove):
-        """
-        Realizuje pionową operację eliminowania unitermów.
-        :param uniterms_to_remove: Lista unitermów do usunięcia.
-        :return: Lista unitermów po eliminacji.
-        """
         self.uniterms = [u for u in self.uniterms if u not in uniterms_to_remove]
         return self.uniterms
 
@@ -57,13 +44,27 @@ def remove_selected():
     update_display()
     save_to_json(processor.uniterms)
 
+def convert_sequence_to_elimination():
+    sequence = processor.sequence_uniterms()
+    if not processor.uniterms:
+        messagebox.showinfo("Informacja", "Brak unitermów do sekwencjonowania.")
+        return
+
+    # Przykładowo usuwamy ostatni element
+    to_remove = [processor.uniterms[-1]]
+    processor.eliminate_uniterms(to_remove)
+    update_display()
+    save_to_json(processor.uniterms)
+
+    messagebox.showinfo("Zamiana zakończona", f"Sekwencja: {sequence}\nUsunięto: {to_remove[0]}")
+
 # Załadowanie danych
 uniterms = load_from_json()
 processor = UnitermProcessor(uniterms)
 
 # Interfejs graficzny
 root = tk.Tk()
-root.title("Uniterm Processor")
+root.title("Uniterm GUI")
 
 frame = tk.Frame(root)
 frame.pack(pady=10)
@@ -79,5 +80,8 @@ update_display()
 
 remove_button = tk.Button(root, text="Usuń zaznaczone", command=remove_selected)
 remove_button.pack()
+
+convert_button = tk.Button(root, text="Zamień sekwencję na eliminację", command=convert_sequence_to_elimination)
+convert_button.pack(pady=10)
 
 root.mainloop()
